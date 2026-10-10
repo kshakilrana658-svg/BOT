@@ -1,0 +1,30 @@
+# ====================================================================
+# cPanel / LiteSpeed / Apache Configuration for Hosting Bot Dashboard
+# ====================================================================
+
+# 1. Default to compiled production SPA
+DirectoryIndex dist/index.html index.html index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Forward /assets/ requests directly to /dist/assets/
+  RewriteRule ^assets/(.*)$ dist/assets/$1 [L,QSA]
+
+  # Root request loads compiled dist/index.html
+  RewriteRule ^$ dist/index.html [L]
+
+  # Single Page Application (SPA) client routing:
+  # If request is not a real file/dir and not an API call, serve dist/index.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/api/
+  RewriteRule ^.*$ dist/index.html [L]
+</IfModule>
+
+# Correct MIME Types for JS Modules & CSS
+<IfModule mod_mime.c>
+  AddType application/javascript .js .mjs
+  AddType text/css .css
+</IfModule>
